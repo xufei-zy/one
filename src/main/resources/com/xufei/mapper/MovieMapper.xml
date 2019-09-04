@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 命名空间 早期版本是可选的 现在是必须的 可以是随意的名称 但是最好是全限定名称 -->
+<mapper namespace="com.xufei.mapper.MovieMapperDao">
+
+	<select id="findMovieList" resultType="map" parameterType="map">
+		select m.*,c.cname from movie m 
+		left join m_c mc on m.mid=mc.mid
+		left join clazz c on c.cid=mc.cid
+		<where>
+			<if test="mname!=null and mname!=''">
+				and m.mname like concat('%',#{mname},'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="findClazzList" resultType="clazz" parameterType="clazz">
+		select * from clazz 
+	</select>
+	
+	<select id="getMovieById" resultType="movie" parameterType="movie">
+		select * from movie where mid =#{mid}
+	</select>
+	
+	<insert id="addMovie" parameterType="movie" useGeneratedKeys="true" keyProperty="mid">
+		insert into movie (mname,content,rname,mdate) values (#{mname},#{content},#{rname},#{mdate})
+	</insert>
+	
+	<update id="updateMovie" parameterType="movie">
+		update movie set mname=#{mname},content=#{content},rname=#{rname},mdate=#{mdate} where mid=#{mid}
+	</update>
+	
+	<delete id="deleteMovie" parameterType="movie">
+		delete from movie where mid=#{mid}
+	</delete>
+	
+	<delete id="deleteAllMovie">
+		delete from movie where mid in
+		<foreach collection="array" item="mid" open="(" separator="," close=")">
+			#{mid}
+		</foreach>
+	</delete>
+</mapper>
